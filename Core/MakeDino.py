@@ -78,8 +78,8 @@ class MakeDino:
         elif ((abs(point-self.DinoData.OrigData.TimeGrid[len(self.DinoData.OrigData.TimeGrid)-1])) <= EPS):
             res = self.DinoData.PRData[len(self.DinoData.PRData)-1]
         else:
-            res, epsiloninterp = Aiteiken(x, y, point)
-        
+            #res, epsiloninterp = Aiteiken(x, y, point)
+            res = LagrangePoly(x,y).interpolate(point)
         return res, epsiloninterp
     
     # Расчет усилия 
@@ -112,7 +112,8 @@ class MakeDino:
         elif ((abs(point-self.DinoData.OrigData.TimeGrid[len(self.DinoData.OrigData.TimeGrid)-1])) <= EPS):
             res = self.DinoData.OrigData.Load[len(self.DinoData.OrigData.Load)-1]
         else:
-            res, epsiloninterp = Aiteiken(x, y, point)
+            #res, epsiloninterp = Aiteiken(x, y, point)
+            res = LagrangePoly(x,y).interpolate(point)
         
         return res, epsiloninterp        
     
@@ -125,8 +126,7 @@ class MakeDino:
             self.DinoData.Load.append(f[0])
             self.DinoData.PolishRoadMovement.append(pr_pos[0])
             
-            self.DinoData.Load_eps.append(f[1])
-            self.DinoData.PolishRoadMovement_eps.append(pr_pos[1])
+            
 
         
         self.DinoData.MaxLoad = np.max(self.DinoData.OrigData.Load)
