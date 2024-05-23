@@ -3,7 +3,7 @@ import numpy as np
 
 # Структура данных Параметров характеризующих СК
 class SKParam:
-    def __init__(self,I = -2200, K = 3728,l = 3000 ,c1 = 2500, c2 = 3500, r = 1200, dh = 0) -> None:
+    def __init__(self,I = -3353, K = 4928,l = 3734 ,c1 = 3124, c2 = 4013, r = 1346, dh = 0) -> None:
         self.I = I
         self.K = K
         self.l = l
@@ -64,10 +64,14 @@ class PRPos:
         Aa = 1 + (b**2)/(d**2)
         Bb = (a*b)/(d**2) - (2*r*b*np.cos((phi*np.pi)/180.0))/(d) - 2*r*np.sin((phi*np.pi)/180.0)
         Cc = r**2 - l**2 + (a**2)/(4*d**2) - (a*r*np.cos((phi*np.pi)/180.0))/(d)
+        
+        PRpos_ = 0
         D = Bb**2 - 4*Aa*Cc
-        y = (-Bb + np.sqrt(D))/(2*Aa)
-
-        PRpos_ = h/1000.0 - ((c2)/(c1))*(y)/(1000.0)
+        if D > 0:
+            y = (-Bb + np.sqrt(D))/(2*Aa)
+            PRpos_ = h/1000.0 - ((c2)/(c1))*(y)/(1000.0)
+        else:
+            PRpos_ = 0
 
         return PRpos_
 
