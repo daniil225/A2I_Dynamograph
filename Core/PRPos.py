@@ -3,7 +3,7 @@ import numpy as np
 
 # Структура данных Параметров характеризующих СК
 class SKParam:
-    def __init__(self,I = -3353, K = 4928,l = 3734 ,c1 = 3124, c2 = 4013, r = 1346, dh = 0) -> None:
+    def __init__(self,I = -3353, K = 5029,l = 3734 ,c1 = 3124, c2 = 4013, r = 1346, dh = 0) -> None:
         self.I = I
         self.K = K
         self.l = l

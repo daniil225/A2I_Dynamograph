@@ -144,5 +144,5 @@ class MakeDino:
             self.DinoData.PolishRoadMovement = [P/max_p for P in self.DinoData.PolishRoadMovement]
 
         #self.DinoData.PolishRoadMovement.reverse()
-        for i in range(0, 100):
-            self.DinoData.PolishRoadMovement[199-i] = self.DinoData.PolishRoadMovement[i]
+        # for i in range(0, 100):
+        #     self.DinoData.PolishRoadMovement[199-i] = self.DinoData.PolishRoadMovement[i]
