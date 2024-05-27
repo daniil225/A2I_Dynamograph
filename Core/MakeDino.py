@@ -67,7 +67,7 @@ class MakeDino:
         # Получаем индекс отрезка которому точка принадлежит 
         idx = 0
         for i in range(0, len(self.DinoData.PRData)-1):
-            if ((point - self.DinoData.OrigData.TimeGrid[i])>= EPS and (point - self.DinoData.OrigData.TimeGrid[i+1]) <= EPS):
+            if ( (self.DinoData.OrigData.TimeGrid[i] <= point and point <= self.DinoData.OrigData.TimeGrid[i+1])):
                 idx = i
                 break
 
