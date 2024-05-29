@@ -1,11 +1,14 @@
-from const import *
-import sqlite3
-from pathlib import Path
-import random, string
+# Пользовотельские
+from Core.const import *
+
+
+import sqlite3, os, time, shutil,random, string
+from glob import glob
+
 
 
 class TableData:
-    def __init__(self, file_path, create_time, type_RKM, id_RKM) -> None:
+    def __init__(self, file_path:str, create_time:str, type_RKM:str, id_RKM:str) -> None:
         self.file_path = file_path  # Путь 
         self.create_time = create_time # Время создания
         self.type_RKM = type_RKM # Тип станка качалки
@@ -27,7 +30,9 @@ class DBManager:
         self.TableUsovData = TABLE_USOV_DATA
         self.TableLufkinData = TABLE_LUFKIN_DATA
 
+        print(self.DBName)
         self.conn = sqlite3.connect(self.DBName) # Подключение к БД
+        
         self.curr = self.conn.cursor() # Курсор для выполнения запросов 
 
         # Создаем если нужно таблицы в БД
@@ -36,7 +41,7 @@ class DBManager:
         self._create_table(self.TableLufkinData)
 
 
-    def _create_table(self, tablename):
+    def _create_table(self, tablename:str):
         self.curr.execute('''
             CREATE TABLE IF NOT EXISTS {table} (
             id INTEGER PRIMARY KEY,
@@ -48,15 +53,28 @@ class DBManager:
             '''.format(table=tablename)
         )
     
-    def insert(self, tablename, data:TableData):
+    def insert(self, tablename:str, data:TableData):
         """
         param: tablename - имя таблицы в которую нужно добавить данные. 
         param: data:TableData - формат данных 
         """
-        print(data.file_path)
         self.curr.execute('INSERT INTO {table} (file_path, create_time,type_RKM,id_RKM) VALUES (?, ?, ?, ?)'.format(table = tablename), (data.file_path, data.create_time, data.type_RKM, data.id_RKM))
         self.conn.commit()
 
+    def get_data_by_time(self, tablename:str, time_from:str, time_to:str):
+        res = []
+        self.curr.execute(''' SELECT *
+                          FROM {0}
+                          WHERE create_time BETWEEN '{1}' AND '{2}'
+
+                        '''.format(tablename, time_from, time_to))
+
+        data = self.curr.fetchall() # Получить результат из БД
+        for d in data:
+            td:TableData = TableData(d[1], d[2], d[3], d[4])
+            res.append(td)
+
+        return res
 
     def close(self):
         self.conn.close()
@@ -87,7 +105,7 @@ class FileManager:
         return base + tm[0] + "_" + tm[1] + "_" + self._randomword(10) + ".txt"
     
     
-    def move_data(self, origin_data = None, usov_dino = None, lufkin_dino = None):
+    def move_data(self, data = None, base_name = None):
         """
         Производит перенос данных из каталога tmp в каталог db. 
         :return - list of TableData 
@@ -95,36 +113,59 @@ class FileManager:
         res = []
 
         # origin_data
-        if origin_data != None:
-            for file in list(glob(os.path.join(TMP_DATA_DIR,origin_data+"*.txt"))):
+        if data != None:
+            for file in list(glob(os.path.join(self.src_dir, data+"*.txt"))):
                 # Get file creation time of file in seconds since epoch
                 creationTimesinceEpoc = os.path.getctime(file)
-                creationTime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(creationTimesinceEpoc))
-                res.append(self._gen_new_filename("origin_data_", creationTime))
-        
-        # usov_dino
-        if usov_dino != None:
-            pass
-
-        # lufkin_dino
-        if lufkin_dino != None:
-            pass
+                creationTime = time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(creationTimesinceEpoc))
+                if base_name != None:
+                    new_filename = self._gen_new_filename(base_name+"_", creationTime)
+                    new_dst = self.dst_dir + "/" +  new_filename
+                    res.append(new_dst)
+                    #shutil.move(file, new_dst)
 
         
         return res
 
 
-import shutil
-from glob import glob
-import os
-import time
+# Служебные объекты
+DataBaseManager = DBManager() # Установили соединение с бд
 
 
-fl = FileManager()
+# Функция добавления файлов в БД и перенос в индексируемую дирректорию нужной информации 
+def file_indexing(data:str, base_name:str, type_RKM = "СК8-3,5-4000", id_RKM = "16427"):
+    fl = FileManager()
+    files = fl.move_data(data=data, base_name=base_name)
+    
+    for file in files:
+        filename = file.split("/")
+        filename = filename[len(filename)-1]
+        d = filename.split("_")[2]
+        t_ = filename.split("_")[3].split("-")
+        t = t_[0] + ":" + t_[1] + ":" + t_[2]
+        res_t = d + " " + t
+        td:TableData = TableData(filename, res_t, type_RKM, id_RKM)
 
-print(fl.move_data("data"))
+        if base_name == "origin_data":
+            DataBaseManager.insert(DataBaseManager.TableOriginData, td)
+        elif base_name == "usov_dino":
+            DataBaseManager.insert(DataBaseManager.TableUsovData, td)
+        elif base_name == "lufkin_dino":
+            DataBaseManager.insert(DataBaseManager.TableLufkinData, td)
+
+# Закрытия соединения с БД
+def DB_close():
+    DataBaseManager.close()
 
 
-#DB = DBManager()
-#DB.insert(DB.TableOriginData, TableData("test.txt", "2024-05-19 17:00:00", "СК8-3,5-4000", "16427"))
-#DB.close()
+file_indexing(data="data", base_name="origin_data")
+file_indexing(data="lufkin_dino", base_name="lufkin_dino")
+file_indexing(data="dino", base_name="usov_dino")
+
+#res = DataBaseManager.get_data_by_time(DataBaseManager.TableOriginData, '2024-05-23 09:00:00', '2024-05-23 11:35:08')
+
+# for r in res:
+#     r:TableData
+#     print(r.create_time)
+
+
