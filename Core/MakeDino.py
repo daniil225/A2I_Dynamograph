@@ -16,6 +16,7 @@ class MakeDino:
         # Генерация угловой сетки  
         self.DinoData.T = self.DinoData.OrigData.T
         self.DinoData.PhiGrid = [(i*360.0)/(self.DinoData.OrigData.DataSize-1) for i in range(0, self.DinoData.OrigData.DataSize)]
+
         # Генерация равномерной сетки по времени 
         self.DinoData.RavTimeGrid = [(i*self.DinoData.T)/(DINO_SIZE-1) for i in range(0, DINO_SIZE)]
         # Генерация массива перемещений по не равномерной сетке
@@ -23,6 +24,7 @@ class MakeDino:
             self.DinoData.PRData = [PRpos.PRPos_v1(phi_i) for phi_i in self.DinoData.PhiGrid]
         elif PRPos_v == 2:
             self.DinoData.PRData = [PRpos.PRPos_v2(phi_i) for phi_i in self.DinoData.PhiGrid]
+            #self.DinoData.PRData = [1.75*(1-np.cos(2*np.pi*ti/self.DinoData.T)) for ti in self.DinoData.OrigData.TimeGrid]
         elif PRPos_v == 3:
             self.DinoData.PRData = [PRpos.PRPos_v3(phi_i) for phi_i in self.DinoData.PhiGrid]
         
@@ -65,7 +67,7 @@ class MakeDino:
         # Получаем индекс отрезка которому точка принадлежит 
         idx = 0
         for i in range(0, len(self.DinoData.PRData)-1):
-            if ((point - self.DinoData.OrigData.TimeGrid[i])>= EPS and (point - self.DinoData.OrigData.TimeGrid[i+1]) <= EPS):
+            if ( (self.DinoData.OrigData.TimeGrid[i] <= point and point <= self.DinoData.OrigData.TimeGrid[i+1])):
                 idx = i
                 break
 
@@ -124,6 +126,7 @@ class MakeDino:
             f = self._CalcF(x)
             pr_pos = self._CalcX(x)
             self.DinoData.Load.append(f[0])
+            
             self.DinoData.PolishRoadMovement.append(pr_pos[0])
             
             
@@ -135,3 +138,11 @@ class MakeDino:
         # Приводим к нужной размерности
         x0 = np.min(self.DinoData.PolishRoadMovement)
         self.DinoData.PolishRoadMovement = [xi - x0 for xi in self.DinoData.PolishRoadMovement]
+
+        if self.DinoData.Load_unit == 2:
+            max_p = np.max(self.DinoData.PolishRoadMovement)
+            self.DinoData.PolishRoadMovement = [P/max_p for P in self.DinoData.PolishRoadMovement]
+
+        #self.DinoData.PolishRoadMovement.reverse()
+        # for i in range(0, 100):
+        #     self.DinoData.PolishRoadMovement[199-i] = self.DinoData.PolishRoadMovement[i]

@@ -31,12 +31,18 @@ def LoadDinoData(filename, Load_unit = 0, PolishRoadMovement_unit = 0) -> DinoDa
     DinDat.Load_unit = Load_unit
     DinDat.PolishRoadMovement_unit = PolishRoadMovement_unit
     
+    if Load_unit == 0:
+        DinDat.MaxLoad = np.max(DinDat.Load)
+        DinDat.MinLoad = np.min(DinDat.Load)
     
     # Нормировка к [кг] 
     if Load_unit == 1:
         DinDat.Load = [L*FT1KG for L in DinDat.Load]
         DinDat.MaxLoad = np.max(DinDat.Load)
         DinDat.MinLoad = np.min(DinDat.Load)
+
+    if PolishRoadMovement_unit == 0:
+        DinDat.PolishRoadMovementMax = np.max(DinDat.PolishRoadMovement)
 
     # Нормировка к [м] 
     if PolishRoadMovement_unit == 1:
@@ -55,6 +61,11 @@ def LoadDinoData(filename, Load_unit = 0, PolishRoadMovement_unit = 0) -> DinoDa
         DinDat.PolishRoadMovement = [P/DinDat.PolishRoadMovementMax for P in DinDat.PolishRoadMovement]
 
     return DinDat
+
+
+Din =  LoadDinoData("../tmp_data/dino_lufkin3.txt")
+print(Din.TablePrint())
+
 
 
 # bool prepare = True - Предподготовка данных для обработки 
