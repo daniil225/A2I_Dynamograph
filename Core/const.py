@@ -26,7 +26,7 @@ DB_NAME = os.path.join(root_dir, "DB_data", "Dino.db")
 TABLE_ORIGIN_DATA = "Origin_Data"
 TABLE_USOV_DATA = "Usov_dino"
 TABLE_LUFKIN_DATA = "Lufkin_dino"
-print(DB_NAME)
+
 # Настройки путей/шаблонов данных
 TMP_DATA_DIR =   os.path.join(root_dir,"tmp_data")
 DB_DATA_DIR =  os.path.join(root_dir,"DB_data")

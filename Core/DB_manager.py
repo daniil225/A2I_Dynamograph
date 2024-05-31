@@ -30,7 +30,7 @@ class DBManager:
         self.TableUsovData = TABLE_USOV_DATA
         self.TableLufkinData = TABLE_LUFKIN_DATA
 
-        print(self.DBName)
+        #print(self.DBName)
         self.conn = sqlite3.connect(self.DBName) # Подключение к БД
         
         self.curr = self.conn.cursor() # Курсор для выполнения запросов 
@@ -122,7 +122,7 @@ class FileManager:
                     new_filename = self._gen_new_filename(base_name+"_", creationTime)
                     new_dst = self.dst_dir + "/" +  new_filename
                     res.append(new_dst)
-                    #shutil.move(file, new_dst)
+                    shutil.move(file, new_dst)
 
         
         return res
@@ -157,15 +157,5 @@ def file_indexing(data:str, base_name:str, type_RKM = "СК8-3,5-4000", id_RKM =
 def DB_close():
     DataBaseManager.close()
 
-
-file_indexing(data="data", base_name="origin_data")
-file_indexing(data="lufkin_dino", base_name="lufkin_dino")
-file_indexing(data="dino", base_name="usov_dino")
-
-#res = DataBaseManager.get_data_by_time(DataBaseManager.TableOriginData, '2024-05-23 09:00:00', '2024-05-23 11:35:08')
-
-# for r in res:
-#     r:TableData
-#     print(r.create_time)
 
 
