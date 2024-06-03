@@ -1,6 +1,6 @@
-from DinoStruct import *
+from Core.DinoStruct import *
 import numpy as np
-from const import *
+from Core.const import *
 
 def LoadDinoData(filename, Load_unit = 0, PolishRoadMovement_unit = 0) -> DinoData:
     DinDat: DinoData = DinoData()
@@ -63,8 +63,8 @@ def LoadDinoData(filename, Load_unit = 0, PolishRoadMovement_unit = 0) -> DinoDa
     return DinDat
 
 
-Din =  LoadDinoData("../tmp_data/dino_lufkin3.txt")
-print(Din.TablePrint())
+#Din =  LoadDinoData("../tmp_data/dino_lufkin3.txt")
+#print(Din.TablePrint())
 
 
 

@@ -1,10 +1,10 @@
 # Мат. Модель построения динамограммы 
 import numpy as np
-from const import *
-from PRPos import *
-from DinoStruct import *
-from DataLoader import *
-from Interpolation import *
+from Core.const import *
+from Core.PRPos import *
+from Core.DinoStruct import *
+from Core.DataLoader import *
+from Core.Interpolation import *
 
 class MakeDino:
     def __init__(self, filename, param: SKParam, PRPos_v = 2,  LoadErrorCoef = 0.03, PolishRoadMovementErrorCoef = 0.0001,prepare = True ,Load_unit = 1) -> None:

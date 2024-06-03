@@ -63,7 +63,8 @@ class ContollErrorCalc:
     y1 = self.Y[n1]
 
     res = y0 + ((y1-y0)/(x1-x0))*(x-x0)
-    return res, np.abs(self.func(x) - res)
+    #return res, np.abs(self.func(x) - res)
+    return res
 
 # Пример использования
 # FastF:ContollErrorCalc = ContollErrorCalc(func=np.sin, N = 512, T = 2*np.pi)

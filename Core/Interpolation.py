@@ -1,7 +1,7 @@
 # Функции интерполяции
 
 import numpy as np
-from const import *
+from Core.const import *
 
 
 def Aiteiken(x, y, xp):
